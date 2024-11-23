@@ -20,11 +20,14 @@ from src.utils.unit_of_work import transaction_mode
 class AuthService(BaseService):
     @transaction_mode
     async def check_account_availability(self, account: str) -> bool:
-        user = await self.uow.user.get_by_query_one_or_none(email=account)
+        user = await self.uow.user.get_by_query_one_or_none(
+            email=account.lower()
+        )
         return user is None
 
     @transaction_mode
     async def initiate_registration(self, account: str) -> None:
+        account = account.lower()
         if not await self.check_account_availability(account):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,

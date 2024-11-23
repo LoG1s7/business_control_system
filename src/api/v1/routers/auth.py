@@ -24,7 +24,6 @@ async def check_account_availability(
     account: str,
     service: AuthService = Depends(AuthService),
 ):
-    account = account.lower()
     is_available = await service.check_account_availability(account)
     return CheckAccountResponse(is_available=is_available)
 
@@ -34,7 +33,6 @@ async def initiate_registration(
     account: str = Form(...),
     service: AuthService = Depends(AuthService),
 ):
-    account = account.lower()
     await service.initiate_registration(account)
     return BaseResponse()
 

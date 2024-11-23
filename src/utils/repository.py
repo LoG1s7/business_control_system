@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Never, TypeVar
 from uuid import UUID
 
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, insert, select, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import BaseModel
@@ -78,7 +78,12 @@ class SqlAlchemyRepository(AbstractRepository):
         return obj.scalar_one()
 
     async def get_by_query_one_or_none(self, **kwargs: Any) -> M | None:
-        query = select(self.model).filter_by(**kwargs)
+        if 'email' in kwargs:
+            email_filter = self.model.email.ilike(kwargs['email'])
+            query = select(self.model).where(email_filter)
+        else:
+            query = select(self.model).filter_by(**kwargs)
+
         res: Result = await self.session.execute(query)
         return res.unique().scalar_one_or_none()
 

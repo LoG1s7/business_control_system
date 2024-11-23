@@ -32,4 +32,4 @@ class CompanyService(BaseService):
     @staticmethod
     def _check_company_exists(company: CompanyModel | None) -> None:
         if not company:
-            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail='User not found')
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail='Company not found')

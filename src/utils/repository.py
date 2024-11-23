@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Never, TypeVar
 from uuid import UUID
 
-from sqlalchemy import delete, insert, select, update, func
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import BaseModel

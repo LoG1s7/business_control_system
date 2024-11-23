@@ -1,14 +1,13 @@
-from fastapi import HTTPException, Depends
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
-
+from fastapi import HTTPException
 from pydantic import UUID4
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
+from src.models import CompanyModel, UserModel
 from src.schemas.company import CompanyWithUsers
-from src.models import UserModel, CompanyModel
-from src.schemas.user import CreateUserRequest, UserSchema, UserRole
+from src.schemas.user import CreateUserRequest, UserRole, UserSchema
+from src.utils.auth.jwt_tools import hash_password
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
-from src.utils.auth.jwt_tools import hash_password
 
 
 class UserInCompanyService(BaseService):

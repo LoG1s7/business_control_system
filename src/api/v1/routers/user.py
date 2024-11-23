@@ -2,12 +2,11 @@
 
 from typing import TYPE_CHECKING
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import UUID4
-from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_403_FORBIDDEN
+from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from src.api.v1.services.user import UserService
-from src.utils.auth.validators import get_current_active_auth_user
 from src.schemas.user import (
     UpdateUserRequest,
     UserFilters,
@@ -15,6 +14,7 @@ from src.schemas.user import (
     UserSchema,
     UsersListResponse,
 )
+from src.utils.auth.validators import get_current_active_auth_user
 
 if TYPE_CHECKING:
     from src.models import UserModel

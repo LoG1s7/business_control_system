@@ -84,8 +84,7 @@ def transaction_mode(func: AsyncFunc) -> AsyncFunc:
             res = await func(self, *args, **kwargs)
             await self.uow.flush()
             return res
-        else:
-            async with self.uow:
-                return await func(self, *args, **kwargs)
+        async with self.uow:
+            return await func(self, *args, **kwargs)
 
     return wrapper

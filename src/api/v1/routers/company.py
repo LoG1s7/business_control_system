@@ -6,8 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import UUID4
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from src.api.v1.services import UserInCompanyService, CompanyService
-from src.utils.auth.validators import get_current_active_auth_user
+from src.api.v1.services import CompanyService, UserInCompanyService
 from src.schemas.company import (
     CompanyResponse,
     CompanyWithUsers,
@@ -15,6 +14,7 @@ from src.schemas.company import (
     CreateCompanyResponse,
 )
 from src.schemas.user import CreateUserResponse, CreateUserWithCompanyRequest, UserSchema
+from src.utils.auth.validators import get_current_active_auth_user
 
 if TYPE_CHECKING:
     from src.models import CompanyModel, UserModel
@@ -62,7 +62,7 @@ async def create_user_in_company(
     created_user: UserModel = await user_in_company_service.create_user_in_company(
         user_request=user_request,
         company_id=company_id,
-        current_user=current_user
+        current_user=current_user,
     )
     created_user.active = True
     return CreateUserResponse(payload=created_user.to_pydantic_schema())

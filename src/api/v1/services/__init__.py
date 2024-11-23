@@ -1,7 +1,7 @@
 __all__ = [
     'CompanyService',
+    'UserInCompanyService',
     'UserService',
-    'UserInCompanyService'
 ]
 
 from src.api.v1.services.company import CompanyService

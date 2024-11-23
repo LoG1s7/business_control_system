@@ -1,18 +1,18 @@
 from fastapi import HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
 
-from src.utils.auth.invite_token import (
-    generate_invite_token,
-    send_invitation_email,
-    verify_invite_token,
-)
-from src.utils.auth.jwt_tools import hash_password
 from src.models import UserModel
 from src.schemas.auth import (
     SignUpCompleteRequest,
     SignUpConfirmRequest,
 )
 from src.schemas.user import UserRole
+from src.utils.auth.invite_token import (
+    generate_invite_token,
+    send_invitation_email,
+    verify_invite_token,
+)
+from src.utils.auth.jwt_tools import hash_password
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
 
@@ -21,7 +21,7 @@ class AuthService(BaseService):
     @transaction_mode
     async def check_account_availability(self, account: str) -> bool:
         user = await self.uow.user.get_by_query_one_or_none(
-            email=account.lower()
+            email=account.lower(),
         )
         return user is None
 

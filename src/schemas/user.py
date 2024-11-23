@@ -4,7 +4,7 @@ from typing import Annotated
 
 from annotated_types import MaxLen, MinLen
 from fastapi import Query
-from pydantic import UUID4, BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import UUID4, BaseModel, ConfigDict, EmailStr, Field
 
 from src.schemas.filter import TypeFilter
 from src.schemas.response import BaseCreateResponse, BaseResponse

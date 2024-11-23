@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime, UTC
+from datetime import UTC, datetime, timedelta
 
 import bcrypt
 import jwt

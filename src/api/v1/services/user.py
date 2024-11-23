@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 from pydantic import UUID4
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 from src.models import UserModel
 from src.schemas.user import CreateUserRequest, UpdateUserRequest, UserDB, UserFilters, UserSchema
@@ -50,7 +50,7 @@ class UserService(BaseService):
         if not await self.get_user_by_id(user_id):
             raise HTTPException(
                 status_code=HTTP_404_NOT_FOUND,
-                detail="User does not exist.",
+                detail='User does not exist.',
             )
         if not current_user.id == user_id:
             raise HTTPException(
@@ -70,7 +70,7 @@ class UserService(BaseService):
             self,
             user_id: UUID4,
             user_request: UpdateUserRequest,
-            current_user: UserSchema
+            current_user: UserSchema,
     ) -> UserModel:
         update_data = user_request.model_dump(exclude_unset=True)
         if not current_user.id == user_id:

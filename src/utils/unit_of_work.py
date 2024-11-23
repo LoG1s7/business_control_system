@@ -44,11 +44,13 @@ class UnitOfWork(AbstractUnitOfWork):
 
     def __init__(self) -> None:
         self.session_factory = async_session_maker
+        self.is_open = False
 
     async def __aenter__(self) -> None:
         self.session = self.session_factory()
         self.company = CompanyRepository(self.session)
         self.user = UserRepository(self.session)
+        self.is_open = True
 
     async def __aexit__(
         self,
@@ -61,9 +63,13 @@ class UnitOfWork(AbstractUnitOfWork):
         else:
             await self.rollback()
         await self.session.close()
+        self.is_open = False
 
     async def commit(self) -> None:
         await self.session.commit()
+
+    async def flush(self) -> None:
+        await self.session.flush()
 
     async def rollback(self) -> None:
         await self.session.rollback()
@@ -74,7 +80,12 @@ def transaction_mode(func: AsyncFunc) -> AsyncFunc:
 
     @functools.wraps(func)
     async def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
-        async with self.uow:
-            return await func(self, *args, **kwargs)
+        if self.uow.is_open:
+            res = await func(self, *args, **kwargs)
+            await self.uow.flush()
+            return res
+        else:
+            async with self.uow:
+                return await func(self, *args, **kwargs)
 
     return wrapper

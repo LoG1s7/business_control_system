@@ -2,11 +2,11 @@
 
 from typing import TYPE_CHECKING
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import UUID4
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
-from src.api.v1.services import CompanyService, UserService
+from src.api.v1.services import UserInCompanyService, CompanyService
 from src.utils.auth.validators import get_current_active_auth_user
 from src.schemas.company import (
     CompanyResponse,
@@ -14,7 +14,7 @@ from src.schemas.company import (
     CreateCompanyRequest,
     CreateCompanyResponse,
 )
-from src.schemas.user import CreateUserResponse, CreateUserWithCompanyRequest, UserRole, UserSchema
+from src.schemas.user import CreateUserResponse, CreateUserWithCompanyRequest, UserSchema
 
 if TYPE_CHECKING:
     from src.models import CompanyModel, UserModel
@@ -50,21 +50,19 @@ async def get_company_with_users(
 
 @router.post(
     path='/user/{company_id}',
-    status_code=HTTP_200_OK,
+    status_code=HTTP_201_CREATED,
 )
 async def create_user_in_company(
     company_id: UUID4,
-    create_user: CreateUserWithCompanyRequest,
-    company_service: CompanyService = Depends(CompanyService),
-    user_service: UserService = Depends(UserService),
+    user_request: CreateUserWithCompanyRequest,
+    user_in_company_service: UserInCompanyService = Depends(UserInCompanyService),
     current_user: UserSchema = Depends(get_current_active_auth_user),
 ) -> CreateUserResponse:
     """Get company by ID."""
-    if not current_user.role == UserRole.ADMIN:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Allowed only for admin')
-    if current_user.company_id != company_id:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail='Allowed only for your company')
-    company: CompanyWithUsers = await company_service.get_company_with_users(company_id)
-    created_user: UserModel = await user_service.create_user(create_user, company.id)
+    created_user: UserModel = await user_in_company_service.create_user_in_company(
+        user_request=user_request,
+        company_id=company_id,
+        current_user=current_user
+    )
     created_user.active = True
     return CreateUserResponse(payload=created_user.to_pydantic_schema())

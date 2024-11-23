@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
 from pydantic import UUID4
-from starlette.status import HTTP_404_NOT_FOUND
+from starlette.status import HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 
 from src.models import UserModel
-from src.schemas.user import CreateUserRequest, UpdateUserRequest, UserDB, UserFilters
+from src.schemas.user import CreateUserRequest, UpdateUserRequest, UserDB, UserFilters, UserSchema
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
 from utils.auth.jwt_tools import hash_password
@@ -45,19 +45,39 @@ class UserService(BaseService):
         return user
 
     @transaction_mode
-    async def delete_user(self, user_id: UUID4) -> None:
-        """..."""
+    async def delete_user(self, current_user: UserSchema, user_id: UUID4) -> None:
+        """Delete user by ID."""
+        if not await self.get_user_by_id(user_id):
+            raise HTTPException(
+                status_code=HTTP_404_NOT_FOUND,
+                detail="User does not exist.",
+            )
+        if not current_user.id == user_id:
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail='Not allowed for other users',
+            )
         await self.uow.user.delete_by_query(id=user_id)
 
     @transaction_mode
     async def get_users_by_filters(self, filters: UserFilters) -> list[UserDB]:
-        """..."""
+        """Get list of user by filters."""
         users: Sequence[UserModel] = await self.uow.user.get_users_by_filter(filters)
         return [user.to_pydantic_schema() for user in users]
 
     @transaction_mode
-    async def update_user(self, user_id: UUID4, user_data: UpdateUserRequest) -> UserModel:
-        update_data = user_data.model_dump(exclude_unset=True)
+    async def update_user(
+            self,
+            user_id: UUID4,
+            user_request: UpdateUserRequest,
+            current_user: UserSchema
+    ) -> UserModel:
+        update_data = user_request.model_dump(exclude_unset=True)
+        if not current_user.id == user_id:
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail='Not allowed for other users',
+            )
         if 'password' in update_data:
             update_data['hashed_password'] = hash_password(update_data.pop('password'))
         user = await self.uow.user.update_one_by_id(obj_id=user_id, **update_data)

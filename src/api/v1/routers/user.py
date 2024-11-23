@@ -43,14 +43,10 @@ async def update_user(
     user_id: UUID4,
     user: UpdateUserRequest,
     service: UserService = Depends(UserService),
+    current_user: UserSchema = Depends(get_current_active_auth_user),
 ) -> UserResponse:
     """Update user."""
-    updated_user: UserModel = await service.update_user(user_id, user)
-    if not updated_user.id == user_id:
-        raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
-            detail='Not allowed for other users',
-        )
+    updated_user: UserModel = await service.update_user(user_id, user, current_user)
     return UserResponse(payload=updated_user.to_pydantic_schema())
 
 
@@ -61,15 +57,10 @@ async def update_user(
 async def delete_user(
     user_id: UUID4,
     service: UserService = Depends(UserService),
-    user: UserSchema = Depends(get_current_active_auth_user),
+    current_user: UserSchema = Depends(get_current_active_auth_user),
 ) -> None:
     """Delete user."""
-    if not user.id == user_id:
-        raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN,
-            detail='Not allowed for other users',
-        )
-    await service.delete_user(user_id)
+    await service.delete_user(current_user=current_user, user_id=user_id)
 
 
 @router.get(

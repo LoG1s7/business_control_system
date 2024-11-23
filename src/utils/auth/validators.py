@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 from starlette import status
 
-from schemas.user import UserSchema
+from src.schemas.user import UserSchema
 from src.api.v1.services.user import UserService
 from src.utils.auth.jwt_tools import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, TOKEN_TYPE_FIELD, decode_jwt
 
@@ -86,10 +86,11 @@ def get_current_active_auth_user(
 
 
 async def validate_auth_user(
-    username: str = Form(),
-    password: str = Form(),
+    username: str = Form(...),
+    password: str = Form(...),
     service: UserService = Depends(get_user_service),
 ):
+    username = username.lower()
     unauthed_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='invalid username or password',

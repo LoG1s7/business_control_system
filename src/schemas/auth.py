@@ -3,6 +3,7 @@ from typing import Annotated
 from annotated_types import MaxLen, MinLen
 from pydantic import BaseModel, EmailStr, Field
 
+from schemas.validators_mixins import EmailValidatorMixin
 from src.schemas.response import BaseResponse
 
 
@@ -14,8 +15,8 @@ class SignUpRequest(BaseModel):
     account: EmailStr
 
 
-class SignUpConfirmRequest(BaseModel):
-    account: EmailStr
+class SignUpConfirmRequest(BaseModel, EmailValidatorMixin):
+    email: EmailStr
     invite_token: str
 
 

@@ -35,7 +35,7 @@ class AuthService(BaseService):
 
     @transaction_mode
     async def confirm_invitation(self, data: SignUpConfirmRequest) -> bool:
-        if not verify_invite_token(data.account, data.invite_token):
+        if not verify_invite_token(data.email, data.invite_token):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='Invalid invite token',

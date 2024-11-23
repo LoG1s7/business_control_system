@@ -4,10 +4,11 @@ from typing import Annotated
 
 from annotated_types import MaxLen, MinLen
 from fastapi import Query
-from pydantic import UUID4, BaseModel, ConfigDict, EmailStr, Field
+from pydantic import UUID4, BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from src.schemas.filter import TypeFilter
 from src.schemas.response import BaseCreateResponse, BaseResponse
+from src.schemas.validators_mixins import EmailValidatorMixin, UsernameValidatorMixin
 
 
 class UserRole(Enum):
@@ -19,7 +20,7 @@ class UserID(BaseModel):
     id: UUID4
 
 
-class CreateUserWithCompanyRequest(BaseModel):
+class CreateUserWithCompanyRequest(BaseModel, UsernameValidatorMixin, EmailValidatorMixin):
     username: Annotated[str, MinLen(3), MaxLen(20)]
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
@@ -33,7 +34,7 @@ class CreateUserRequest(CreateUserWithCompanyRequest):
     company_id: UUID4
 
 
-class UserSchema(BaseModel):
+class UserSchema(BaseModel, UsernameValidatorMixin, EmailValidatorMixin):
     model_config = ConfigDict(strict=True)
 
     id: UUID4
@@ -47,7 +48,7 @@ class UserSchema(BaseModel):
     role: UserRole = Field(default=UserRole.EMPLOYEE)
 
 
-class UpdateUserRequest(CreateUserRequest):
+class UpdateUserRequest(CreateUserWithCompanyRequest):
     first_name: str | None = Field(max_length=50)
     last_name: str | None = Field(max_length=50)
     middle_name: str | None = Field(max_length=50, default=None)

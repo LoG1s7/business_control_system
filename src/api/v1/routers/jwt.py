@@ -8,11 +8,11 @@ from fastapi.security import (
 from pydantic import BaseModel
 
 from schemas.user import UserSchema
-from src.api.v1.utils.helpers import (
+from src.utils.auth.jwt_tools import (
     create_access_token,
     create_refresh_token,
 )
-from src.api.v1.utils.validators import (
+from src.utils.auth.validators import (
     get_current_active_auth_user,
     get_current_auth_user_for_refresh,
     get_current_token_payload,

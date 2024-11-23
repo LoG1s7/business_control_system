@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import Depends, Form, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
@@ -5,12 +6,7 @@ from starlette import status
 
 from schemas.user import UserSchema
 from src.api.v1.services.user import UserService
-from src.api.v1.utils.helpers import (
-    ACCESS_TOKEN_TYPE,
-    REFRESH_TOKEN_TYPE,
-    TOKEN_TYPE_FIELD,
-)
-from src.auth import utils as auth_utils
+from src.utils.auth.jwt_tools import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, TOKEN_TYPE_FIELD, decode_jwt
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl='/api/v1/jwt/login/',
@@ -25,7 +21,7 @@ def get_current_token_payload(
     token: str = Depends(oauth2_scheme),
 ) -> dict:
     try:
-        payload = auth_utils.decode_jwt(
+        payload = decode_jwt(
             token=token,
         )
     except InvalidTokenError as e:
@@ -102,7 +98,7 @@ async def validate_auth_user(
     if not (user := await service.get_user_by_username(username)):
         raise unauthed_exc
 
-    if not auth_utils.validate_password(
+    if not validate_password(
         password=password,
         hashed_password=user.hashed_password,
     ):
@@ -115,3 +111,13 @@ async def validate_auth_user(
         )
 
     return user
+
+
+def validate_password(
+    password: str,
+    hashed_password: bytes,
+) -> bool:
+    return bcrypt.checkpw(
+        password=password.encode(),
+        hashed_password=hashed_password,
+    )

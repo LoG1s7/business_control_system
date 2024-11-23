@@ -7,7 +7,7 @@ from pydantic import UUID4
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 
 from src.api.v1.services import CompanyService, UserService
-from src.api.v1.utils.validators import get_current_active_auth_user
+from src.utils.auth.validators import get_current_active_auth_user
 from src.schemas.company import (
     CompanyResponse,
     CompanyWithUsers,

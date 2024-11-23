@@ -4,11 +4,11 @@ from fastapi import HTTPException
 from pydantic import UUID4
 from starlette.status import HTTP_404_NOT_FOUND
 
-from auth.utils import hash_password
 from src.models import UserModel
 from src.schemas.user import CreateUserRequest, UpdateUserRequest, UserDB, UserFilters
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
+from utils.auth.jwt_tools import hash_password
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

@@ -1,12 +1,12 @@
 from fastapi import HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
 
-from src.auth.utils import (
+from src.utils.auth.invite_token import (
     generate_invite_token,
-    hash_password,
     send_invitation_email,
     verify_invite_token,
 )
+from src.utils.auth.jwt_tools import hash_password
 from src.models import UserModel
 from src.schemas.auth import (
     SignUpCompleteRequest,

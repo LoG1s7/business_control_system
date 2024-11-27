@@ -14,6 +14,7 @@ from src.schemas.validators_mixins import EmailValidatorMixin, UsernameValidator
 class UserRole(Enum):
     ADMIN = 'admin'
     EMPLOYEE = 'employee'
+    MANAGER = 'manager'
 
 
 class UserID(BaseModel):
@@ -27,7 +28,6 @@ class CreateUserWithCompanyRequest(BaseModel, UsernameValidatorMixin, EmailValid
     middle_name: str | None = Field(max_length=50, default=None)
     email: EmailStr
     password: str = Field(min_length=6, max_length=50)
-    role: UserRole = Field(default=UserRole.EMPLOYEE)
 
 
 class CreateUserRequest(CreateUserWithCompanyRequest):
@@ -45,7 +45,7 @@ class UserSchema(BaseModel, UsernameValidatorMixin, EmailValidatorMixin):
     company_id: UUID4
     email: EmailStr | None = None
     active: bool = True
-    role: UserRole = Field(default=UserRole.EMPLOYEE)
+    role: UserRole | None = None
 
 
 class UpdateUserRequest(CreateUserWithCompanyRequest):

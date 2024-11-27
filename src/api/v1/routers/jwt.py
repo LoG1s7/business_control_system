@@ -1,3 +1,5 @@
+"""The module contains base routes for authentication with jwt tokens."""
+
 from fastapi import (
     APIRouter,
     Depends,

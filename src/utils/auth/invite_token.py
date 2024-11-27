@@ -1,23 +1,56 @@
-import secrets
 import smtplib
+from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import jwt
 from loguru import logger
+from pydantic import UUID4
 
 from src.config import settings
-
-invite_tokens = {}
-
-
-def generate_invite_token(account: str) -> str:
-    token = secrets.token_urlsafe(16)
-    invite_tokens[account] = token
-    return token
+from src.schemas.user import UserRole
+from src.utils.auth.jwt_tools import create_jwt, decode_jwt
 
 
-def verify_invite_token(account: str, token: str) -> bool:
-    return invite_tokens.get(account) == token
+def generate_admin_invite_token(account: str, role: UserRole) -> str:
+    token_data = {
+        'sub': account,
+        'role': role.value,
+    }
+    invite_token = create_jwt(
+        token_type='invite',
+        token_data=token_data,
+        expire_timedelta=timedelta(days=1),
+    )
+    return invite_token
+
+
+def generate_employee_invite_token(company_id: UUID4, account: str, role: UserRole) -> str:
+    token_data = {
+        'company_id': str(company_id),
+        'sub': account,
+        'role': role.value,
+    }
+    invite_token = create_jwt(
+        token_type='invite',
+        token_data=token_data,
+        expire_timedelta=timedelta(days=1),
+    )
+    return invite_token
+
+
+def verify_invite_token(token: str) -> dict | None:
+    try:
+        payload = decode_jwt(token)
+        if payload.get('type') != 'invite':
+            return None
+        return payload
+    except jwt.ExpiredSignatureError:
+        logger.error('Токен истёк')
+        return None
+    except jwt.InvalidTokenError:
+        logger.error('Неверный токен')
+        return None
 
 
 async def send_invitation_email(account: str, invite_token: str) -> None:

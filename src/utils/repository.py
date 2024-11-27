@@ -97,6 +97,11 @@ class SqlAlchemyRepository(AbstractRepository):
         obj: Result | None = await self.session.execute(query)
         return obj.scalar_one_or_none()
 
+    async def update_one_by_email(self, obj_email: str, **kwargs: Any) -> M | None:
+        query = update(self.model).filter(self.model.email == obj_email).values(**kwargs).returning(self.model)
+        obj: Result | None = await self.session.execute(query)
+        return obj.scalar_one_or_none()
+
     async def delete_by_query(self, **kwargs: Any) -> None:
         query = delete(self.model).filter_by(**kwargs)
         await self.session.execute(query)

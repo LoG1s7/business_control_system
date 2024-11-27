@@ -1,8 +1,9 @@
 from typing import Annotated
 
 from annotated_types import MaxLen, MinLen
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import UUID4, BaseModel, EmailStr, Field
 
+from schemas.user import UserRole
 from schemas.validators_mixins import EmailValidatorMixin
 from src.schemas.response import BaseResponse
 
@@ -16,8 +17,15 @@ class SignUpRequest(BaseModel):
 
 
 class SignUpConfirmRequest(BaseModel, EmailValidatorMixin):
+
     email: EmailStr
     invite_token: str
+
+
+class SignUpConfirmUserInCompanyRequest(BaseModel, EmailValidatorMixin):
+    company_id: UUID4
+    email: EmailStr
+    role: UserRole
 
 
 class SignUpCompleteRequest(BaseModel):

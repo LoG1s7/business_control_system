@@ -5,8 +5,13 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 class BaseResponse(BaseModel):
     status: int = HTTP_200_OK
     error: bool = False
+    message: str = ''
 
 
 class BaseCreateResponse(BaseModel):
     status: int = HTTP_201_CREATED
     error: bool = False
+
+
+class PayloadResponse(BaseResponse):
+    payload: dict

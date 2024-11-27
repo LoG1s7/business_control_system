@@ -2,10 +2,11 @@ import bcrypt
 from fastapi import Depends, Form, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
+from pydantic import UUID4
 from starlette import status
 
 from src.api.v1.services.user import UserService
-from src.schemas.user import UserSchema
+from src.schemas.user import UserRole, UserSchema
 from src.utils.auth.jwt_tools import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, TOKEN_TYPE_FIELD, decode_jwt
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -122,3 +123,19 @@ def validate_password(
         password=password.encode(),
         hashed_password=hashed_password,
     )
+
+
+def check_user_is_admin(user: UserSchema | None) -> None:
+    if not user.role == UserRole.ADMIN:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Allowed only for admin')
+
+
+def check_company_is_yours(
+        user: UserSchema | None,
+        company_id: UUID4,
+) -> None:
+    if user.company_id != company_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Allowed only for your company',
+        )

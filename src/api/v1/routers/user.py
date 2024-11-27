@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 from pydantic import UUID4
-from starlette.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
-from src.api.v1.services.user import UserService
+from src.api.v1.services import UserInCompanyService, UserService
 from src.schemas.user import (
+    CreateUserResponse,
+    CreateUserWithCompanyRequest,
     UpdateUserRequest,
     UserFilters,
     UserResponse,
@@ -20,6 +22,25 @@ if TYPE_CHECKING:
     from src.models import UserModel
 
 router = APIRouter(prefix='/user')
+
+
+@router.post(
+    path='/{company_id}',
+    status_code=HTTP_201_CREATED,
+)
+async def create_user_in_company(
+    company_id: UUID4,
+    user_request: CreateUserWithCompanyRequest,
+    user_in_company_service: UserInCompanyService = Depends(UserInCompanyService),
+    current_user: UserSchema = Depends(get_current_active_auth_user),
+) -> CreateUserResponse:
+    """Get company by ID."""
+    created_user: UserModel = await user_in_company_service.create_user_in_company(
+        user_request=user_request,
+        company_id=company_id,
+        current_user=current_user,
+    )
+    return CreateUserResponse(payload=created_user.to_pydantic_schema())
 
 
 @router.get(

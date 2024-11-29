@@ -81,6 +81,9 @@ class SqlAlchemyRepository(AbstractRepository):
         if 'email' in kwargs:
             email_filter = self.model.email.ilike(kwargs['email'])
             query = select(self.model).where(email_filter)
+        elif 'username' in kwargs:
+            username_filter = self.model.username.ilike(kwargs['username'])
+            query = select(self.model).where(username_filter)
         else:
             query = select(self.model).filter_by(**kwargs)
 
@@ -94,11 +97,6 @@ class SqlAlchemyRepository(AbstractRepository):
 
     async def update_one_by_id(self, obj_id: int | str | UUID, **kwargs: Any) -> M | None:
         query = update(self.model).filter(self.model.id == obj_id).values(**kwargs).returning(self.model)
-        obj: Result | None = await self.session.execute(query)
-        return obj.scalar_one_or_none()
-
-    async def update_one_by_email(self, obj_email: str, **kwargs: Any) -> M | None:
-        query = update(self.model).filter(self.model.email == obj_email).values(**kwargs).returning(self.model)
         obj: Result | None = await self.session.execute(query)
         return obj.scalar_one_or_none()
 

@@ -40,6 +40,7 @@ class UserService(BaseService):
     @transaction_mode
     async def get_user_by_username(self, username: str) -> UserModel:
         """Get user by username."""
+        username = username.lower()
         user: UserModel | None = await self.uow.user.get_by_query_one_or_none(username=username)
         self._check_user_exists(user)
         return user
@@ -67,10 +68,10 @@ class UserService(BaseService):
 
     @transaction_mode
     async def update_user(
-            self,
-            user_id: UUID4,
-            user_request: UpdateUserRequest,
-            current_user: UserSchema,
+        self,
+        user_id: UUID4,
+        user_request: UpdateUserRequest,
+        current_user: UserSchema,
     ) -> UserModel:
         update_data = user_request.model_dump(exclude_unset=True)
         if not current_user.id == user_id:

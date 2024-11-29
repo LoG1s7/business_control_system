@@ -17,7 +17,6 @@ class SignUpRequest(BaseModel):
 
 
 class SignUpConfirmRequest(BaseModel, EmailValidatorMixin):
-
     email: EmailStr
     invite_token: str
 
@@ -34,4 +33,5 @@ class SignUpCompleteRequest(BaseModel):
     password: str = Field(min_length=6, max_length=50)
     first_name: str = Field(max_length=50)
     last_name: str = Field(max_length=50)
+    middle_name: str | None = Field(max_length=50, default=None)
     company_name: str = Field(max_length=50)

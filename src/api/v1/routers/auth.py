@@ -31,7 +31,7 @@ async def check_account_availability(
     return CheckAccountResponse(is_available=is_available)
 
 
-@router.post('/sign-up-admin/', status_code=HTTP_200_OK)
+@router.post('/sign-up/', status_code=HTTP_200_OK)
 async def initiate_admin_registration(
     account: str = Form(...),
     service: AuthService = Depends(AuthService),
@@ -65,20 +65,28 @@ async def confirm_invitation(
     return PayloadResponse(payload=payload, message='Registration confirmed')
 
 
-@router.post('/sign-up-company-complete/', status_code=HTTP_201_CREATED)
+@router.post('/sign-up/admin/complete/{invite_token}', status_code=HTTP_201_CREATED)
 async def complete_company_with_admin_registration(
+    invite_token: str,
     data: SignUpCompleteRequest,
     service: AuthService = Depends(AuthService),
 ):
-    user = await service.complete_company_with_admin_registration(data)
-    return UserResponse(payload=user.to_pydantic_schema())
+    payload = await service.confirm_invitation(invite_token)
+    user = await service.complete_company_with_admin_registration(data=data, payload=payload)
+    return UserResponse(
+        payload=user.to_pydantic_schema(),
+        message='Registration complete',
+    )
 
 
-@router.post('/sign-up-complete-in-company/', status_code=HTTP_200_OK)
+@router.post('/sign-up/user/complete/{invite_token}', status_code=HTTP_200_OK)
 async def complete_user_in_company_registration(
     invite_token: str,
     service: AuthService = Depends(AuthService),
 ):
     payload = await service.confirm_invitation(invite_token)
     user = await service.complete_user_in_company_registration(payload)
-    return UserResponse(payload=user.to_pydantic_schema())
+    return UserResponse(
+        payload=user.to_pydantic_schema(),
+        message='Registration complete',
+    )

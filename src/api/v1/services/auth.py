@@ -40,12 +40,11 @@ class AuthService(BaseService):
 
     @transaction_mode
     async def initiate_employee_registration(
-            self,
-            company_id: UUID4,
-            account: str,
-            role: UserRole,
-            current_user: UserSchema,
-
+        self,
+        company_id: UUID4,
+        account: str,
+        role: UserRole,
+        current_user: UserSchema,
     ) -> None:
         check_user_is_admin(current_user)
         check_company_is_yours(current_user, company_id)
@@ -64,7 +63,18 @@ class AuthService(BaseService):
         return payload
 
     @transaction_mode
-    async def complete_company_with_admin_registration(self, data: SignUpCompleteRequest) -> UserModel:
+    async def complete_company_with_admin_registration(
+            self,
+            payload: dict,
+            data: SignUpCompleteRequest,
+    ) -> UserModel:
+        account_email = payload.get('sub')
+        if not account_email == data.email:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Account emails do not match',
+            )
+
         if not await self.check_account_availability(data.email):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
@@ -91,10 +101,9 @@ class AuthService(BaseService):
 
     @transaction_mode
     async def complete_user_in_company_registration(
-            self,
-            payload: dict,
+        self,
+        payload: dict,
     ) -> UserModel:
-
         account_email = payload.get('sub')
         role_value = payload.get('role', UserRole.EMPLOYEE.value)
         role = UserRole(role_value)
@@ -115,8 +124,8 @@ class AuthService(BaseService):
                 detail='Invalid token payload',
             )
 
-        user = await self.uow.user.update_one_by_email(
-            obj_email=account_email,
+        user = await self.uow.user.update_one_by_id(
+            obj_id=user.id,
             role=role,
             active=True,
         )

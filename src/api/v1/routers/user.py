@@ -16,7 +16,7 @@ from src.schemas.user import (
     UserSchema,
     UsersListResponse,
 )
-from src.utils.auth.validators import get_current_active_auth_user
+from src.utils.auth.validators import get_current_active_auth_user, get_current_admin_auth_user
 
 if TYPE_CHECKING:
     from src.models import UserModel
@@ -32,13 +32,13 @@ async def create_user_in_company(
     company_id: UUID4,
     user_request: CreateUserWithCompanyRequest,
     user_in_company_service: UserInCompanyService = Depends(UserInCompanyService),
-    current_user: UserSchema = Depends(get_current_active_auth_user),
+    admin: UserSchema = Depends(get_current_admin_auth_user),
 ) -> CreateUserResponse:
     """Get company by ID."""
     created_user: UserModel = await user_in_company_service.create_user_in_company(
         user_request=user_request,
         company_id=company_id,
-        current_user=current_user,
+        current_user=admin,
     )
     return CreateUserResponse(payload=created_user.to_pydantic_schema())
 

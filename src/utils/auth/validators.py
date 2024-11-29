@@ -77,12 +77,24 @@ get_current_auth_user_for_refresh = get_auth_user_from_token_of_type(REFRESH_TOK
 
 def get_current_active_auth_user(
     user: UserSchema = Depends(get_current_auth_user),
-):
+) -> UserSchema:
     if user.active:
         return user
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail='inactive user',
+    )
+
+
+async def get_current_admin_auth_user(
+    user: UserSchema = Depends(get_current_auth_user),
+) -> UserSchema:
+    """Get current admin auth user"""
+    if user.role == UserRole.ADMIN:
+        return user
+
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN, detail='user is not admin',
     )
 
 
@@ -131,8 +143,8 @@ def check_user_is_admin(user: UserSchema | None) -> None:
 
 
 def check_company_is_yours(
-        user: UserSchema | None,
-        company_id: UUID4,
+    user: UserSchema | None,
+    company_id: UUID4,
 ) -> None:
     if user.company_id != company_id:
         raise HTTPException(

@@ -10,17 +10,16 @@ from src.schemas.user import CreateUserRequest, UserSchema
 from src.utils.auth.jwt_tools import hash_password
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
-from utils.auth.validators import check_company_is_yours, check_user_is_admin
+from utils.auth.validators import check_company_is_yours
 
 
 class UserInCompanyService(BaseService):
-
     @staticmethod
     def _check_company_exists(company: CompanyModel | None) -> None:
         if not company:
             raise HTTPException(
                 status_code=HTTP_404_NOT_FOUND,
-                detail='Company not found'
+                detail='Company not found',
             )
 
     async def _check_user_exists(self, user_data: dict[str, Any] | None) -> None:
@@ -52,13 +51,12 @@ class UserInCompanyService(BaseService):
 
     @transaction_mode
     async def create_user_in_company(
-            self,
-            user_request: CreateUserRequest,
-            current_user: UserSchema,
-            company_id: UUID4,
+        self,
+        user_request: CreateUserRequest,
+        current_user: UserSchema,
+        company_id: UUID4,
     ) -> UserModel:
         """Create user in company."""
-        check_user_is_admin(current_user)
         check_company_is_yours(current_user, company_id)
         user_data = user_request.model_dump()
         await self._check_user_exists(user_data)

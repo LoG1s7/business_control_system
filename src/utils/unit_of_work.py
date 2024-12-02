@@ -6,7 +6,14 @@ from types import TracebackType
 from typing import Any, Never
 
 from src.database.db import async_session_maker
-from src.repositories import CompanyRepository, UserRepository
+from src.repositories import (
+    CompanyRepository,
+    PositionAssignmentRepository,
+    PositionInSubdivisionRepository,
+    PositionRepository,
+    SubdivisionRepository,
+    UserRepository,
+)
 from src.utils.custom_types import AsyncFunc
 
 
@@ -50,6 +57,11 @@ class UnitOfWork(AbstractUnitOfWork):
         self.session = self.session_factory()
         self.company = CompanyRepository(self.session)
         self.user = UserRepository(self.session)
+        self.subdivision = SubdivisionRepository(self.session)
+        self.position = PositionRepository(self.session)
+        self.position_assignment = PositionAssignmentRepository(self.session)
+        self.position_in_subdivision = PositionInSubdivisionRepository(self.session)
+
         self.is_open = True
 
     async def __aexit__(

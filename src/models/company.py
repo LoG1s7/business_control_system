@@ -8,6 +8,7 @@ from src.schemas.company import CompanyDB
 from src.utils.custom_types import created_at, updated_at, uuid_pk
 
 if TYPE_CHECKING:
+    from src.models.subdivision import SubdivisionModel
     from src.models.user import UserModel
 
 
@@ -21,6 +22,10 @@ class CompanyModel(BaseModel):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
+    subdivisions: Mapped[list['SubdivisionModel']] = relationship(
+        'SubdivisionModel',
+        back_populates='company',
+    )
     users: Mapped[list['UserModel']] = relationship(back_populates='company')
 
     def to_pydantic_schema(self) -> CompanyDB:

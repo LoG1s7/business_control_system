@@ -57,6 +57,9 @@ ignore = [
     "RUF009", # function-call-in-dataclass-default-argument
     "S101", # assert
     "S608", # hardcoded-sql-expression
+    "DOC201",
+    "D106",
+    "RET504"
 ]
 
 [tool.ruff.lint.flake8-quotes]

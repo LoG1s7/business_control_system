@@ -86,10 +86,10 @@ def get_current_active_auth_user(
     )
 
 
-async def get_current_admin_auth_user(
+def get_current_admin_auth_user(
     user: UserSchema = Depends(get_current_auth_user),
 ) -> UserSchema:
-    """Get current admin auth user"""
+    """Get current admin auth user."""
     if user.role == UserRole.ADMIN:
         return user
 
@@ -102,7 +102,7 @@ async def validate_auth_user(
     username: str = Form(...),
     password: str = Form(...),
     service: UserService = Depends(get_user_service),
-):
+) -> UserSchema:
     username = username.lower()
     unauthed_exc = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

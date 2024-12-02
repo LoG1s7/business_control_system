@@ -60,10 +60,7 @@ def encode_jwt(
 ) -> str:
     to_encode = payload.copy()
     now = datetime.now(tz=UTC)
-    if expire_timedelta:
-        expire = now + expire_timedelta
-    else:
-        expire = now + timedelta(minutes=expire_minutes)
+    expire = now + expire_timedelta if expire_timedelta else now + timedelta(minutes=expire_minutes)
     to_encode.update(
         exp=expire,
         iat=now,

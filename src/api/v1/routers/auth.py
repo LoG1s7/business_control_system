@@ -42,7 +42,7 @@ async def initiate_admin_registration(
 
 @router.post('/send-invite/{company_id}', status_code=HTTP_200_OK)
 async def send_invite_with_role_in_company(
-    data: SignUpConfirmUserInCompanyRequest,
+    data: SignUpConfirmUserInCompanyRequest, company_id,
     service: AuthService = Depends(AuthService),
     current_user: UserSchema = Depends(get_current_active_auth_user),
 ):

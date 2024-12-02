@@ -4,7 +4,6 @@ from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-# from src.middlewares.auth_middleware import AuthMiddleware
 from src.api import router
 from src.metadata import DESCRIPTION, TAG_METADATA, TITLE, VERSION
 
@@ -32,7 +31,6 @@ def create_fast_api_app() -> FastAPI:
             redoc_url=None,
         )
 
-    # fastapi_app.add_middleware(AuthMiddleware)
     fastapi_app.include_router(router, prefix='/api')
     return fastapi_app
 

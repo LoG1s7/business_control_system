@@ -1,5 +1,11 @@
 __all__ = [
     'router',
+    'v1_auth_router',
+    'v1_company_router',
+    'v1_jwt_router',
+    'v1_position_router',
+    'v1_subdivision_router',
+    'v1_user_router',
 ]
 
 import asyncio
@@ -10,7 +16,14 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 
-from src.api.v1.routers import v1_auth_router, v1_company_router, v1_jwt_router, v1_user_router
+from src.api.v1.routers import (
+    v1_auth_router,
+    v1_company_router,
+    v1_jwt_router,
+    v1_position_router,
+    v1_subdivision_router,
+    v1_user_router,
+)
 from src.database.db import get_async_session
 from src.metadata import ERRORS_MAP
 from src.schemas.response import BaseResponse
@@ -20,6 +33,8 @@ router.include_router(v1_auth_router, prefix='/v1', tags=['Authentication | v1']
 router.include_router(v1_user_router, prefix='/v1', tags=['User | v1'])
 router.include_router(v1_company_router, prefix='/v1', tags=['Company | v1'])
 router.include_router(v1_jwt_router, prefix='/v1', tags=['JWT | v1'])
+router.include_router(v1_position_router, prefix='/v1', tags=['Position | v1'])
+router.include_router(v1_subdivision_router, prefix='/v1', tags=['Subdivision | v1'])
 
 
 @router.get(

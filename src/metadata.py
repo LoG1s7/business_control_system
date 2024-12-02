@@ -1,11 +1,19 @@
 TAG_METADATA = [
     {
         'name': 'User | v1',
-        'description': 'Operation with user v1.',
+        'description': 'Operations with user v1.',
     },
     {
         'name': 'Company | v1',
-        'description': 'Operation with company v1.',
+        'description': 'Operations with company v1.',
+    },
+    {
+        'name': 'Position | v1',
+        'description': 'Operations with positions v1.',
+    },
+    {
+        'name': 'Subdivision | v1',
+        'description': 'Operations with subdivisions in company v1.',
     },
     {
         'name': 'Authentication | v1',
@@ -22,9 +30,7 @@ TAG_METADATA = [
 ]
 
 TITLE = 'API business control system'
-DESCRIPTION = (
-    'Implemented on FastAPI.\n\nBusiness control system API\n\nFor contact - https://t.me/log1s7'
-)
+DESCRIPTION = 'Implemented on FastAPI.\n\nBusiness control system API\n\nFor contact - https://t.me/log1s7'
 VERSION = '0.0.1'
 
 ERRORS_MAP = {

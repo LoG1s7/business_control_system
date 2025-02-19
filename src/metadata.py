@@ -8,12 +8,12 @@ TAG_METADATA = [
         'description': 'Operations with company v1.',
     },
     {
-        'name': 'Position | v1',
-        'description': 'Operations with positions v1.',
-    },
-    {
         'name': 'Subdivision | v1',
         'description': 'Operations with subdivisions in company v1.',
+    },
+    {
+        'name': 'Position | v1',
+        'description': 'Operations with positions v1.',
     },
     {
         'name': 'Authentication | v1',

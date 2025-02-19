@@ -11,7 +11,6 @@ from pydantic import (
 )
 from sqlalchemy_utils import Ltree
 
-from src.schemas.position_in_subdivision import PositionInSubdivisionDB
 from src.schemas.response import BaseCreateResponse, BaseResponse
 
 LtreeField = Annotated[
@@ -50,7 +49,6 @@ class SubdivisionInDB(SubdivisionBase):
     manager_id: UUID4 | None
     created_at: datetime
     updated_at: datetime
-    position_in_subdivision: list[PositionInSubdivisionDB]
 
     class Config:
         from_attributes = True
